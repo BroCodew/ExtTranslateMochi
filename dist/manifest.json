@@ -10,12 +10,13 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content_script.jsx-loader-22cbd5d8.js"
+        "assets/content_script.jsx-loader-fded4f6b.js"
       ],
       "matches": [
         "<all_urls>"
       ],
       "css": [
+        "assets/content_script-f03861ba.css",
         "assets/index-49f6d87a.css"
       ]
     }
@@ -65,7 +66,7 @@
       "resources": [
         "assets/Icon_Translate-1e62bf37.png",
         "assets/client-3c8a2c3a.js",
-        "assets/content_script.jsx-34ecd528.js"
+        "assets/content_script.jsx-5f77e926.js"
       ],
       "use_dynamic_url": true
     }
