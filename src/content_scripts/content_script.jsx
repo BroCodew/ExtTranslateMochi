@@ -3,8 +3,16 @@ import Logo from "../assets/logo.png";
 import React, {useEffect, useRef, useState} from "react";
 import ReactDOM from "react-dom/client";
 import TranslateIcon from "../images/Icon_Translate.png";
-import './index.scss'
+import '../content_scripts/styles/index.module.scss'
 import ReactDOMServer from "react-dom/server";
+import LogoDetail from "../assets/logoDetail.png";
+
+import Close from "../images/Icon_close.png";
+import Copy from "../images/Icon_copy.png";
+import Setting from "../images/Icon_setting.png";
+import Speaker from "../images/Icon_speaker.png";
+import Translate from "../images/Icon_Translate.png";
+
 
 function ContentScript() {
     const [selectedText, setSelectedText] = useState("");
@@ -108,19 +116,52 @@ function ContentScript() {
     };
 
 
-
-    const TooltipContent = ({ selectionText, selectionTextTranslated }) => (
+    const TooltipContent = ({selectionText, selectionTextTranslated}) => (
         <div id="translator-result-ext-rhp">
             <div className="translator-result-ext-container">
-                <label className="container">
-                    Input
-                    <span>{selectionText}</span>
-                </label>
-                <br />
-                <label>
-                    Output
-                    <span>{selectionTextTranslated}</span>
-                </label>
+                <div>
+                    <div className={styles.translateContainer}>
+                        <div className={styles.translateHeader}>
+                            <div className={styles.headerChange}>
+                                <img alt={""} src={chrome.runtime.getURL(Translate)} style={{width: 24, height: 24}}/>
+                                <p className={styles.changeInto}>Translate into : </p>
+                                <div className={styles.changeLanguage}>
+                                    <select
+                                        placeholder="ENG"
+                                        className={styles.languageSelect}
+                                        style={{color: "#000", fontWeight: 700}}
+                                    >
+                                        <option style={{marginBottom: 20}} value="option1">
+                                            ENG
+                                        </option>
+                                        <option value="option2">VN</option>
+                                        <option value="option3">CN</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className={styles.headerSetting}>
+                                <div style={{paddingRight: "34px"}}>
+                                    <img alt={""} src={chrome.runtime.getURL(Setting)} style={{width: 16, height: 16}}/>
+                                </div>
+                                <div style={{paddingRight: "17px"}}>
+                                    <im alt={""} src={chrome.runtime.getURL(Close)} style={{width: 14, height: 14}}/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="translate-body" style={{display: "flex"}}>
+                            <div>
+
+                                <img alt={""} src={chrome.runtime.getURL(Speaker)} style={{width: 18, height: 18}}/>
+                            </div>
+                            <div>
+                                <img alt={""} src={chrome.runtime.getURL(Copy)} style={{width: 18, height: 18}}/>
+                            </div>
+                        </div>
+                        <div className="translate-footer"></div>
+                    </div>
+                </div>
+
             </div>
         </div>
     );
@@ -196,7 +237,7 @@ document.body.appendChild(index);
 
 ReactDOM.createRoot(index).render(
     <React.StrictMode>
-        <ContentScript/>
+            <ContentScript/>
     </React.StrictMode>
 );
 

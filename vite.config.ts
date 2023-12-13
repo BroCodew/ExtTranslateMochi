@@ -3,7 +3,8 @@ import react from "@vitejs/plugin-react";
 import { crx, ManifestV3Export } from "@crxjs/vite-plugin";
 import manifest from "./manifest.json";
 import svgr from "vite-plugin-svgr";
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
+
 
 export default defineConfig({
 	plugins: [
