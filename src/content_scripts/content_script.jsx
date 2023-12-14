@@ -3,7 +3,7 @@ import Logo from "../assets/logo.png";
 import React, {useEffect, useRef, useState} from "react";
 import ReactDOM from "react-dom/client";
 import TranslateIcon from "../images/Icon_Translate.png";
-import '../content_scripts/styles/index.module.scss'
+import './styles/index.scss'
 import ReactDOMServer from "react-dom/server";
 import LogoDetail from "../assets/logoDetail.png";
 
@@ -102,7 +102,7 @@ function ContentScript() {
             tooltipWrapperRef.current.addEventListener("click", async () => {
                 if (selectionText.length > 0) {
                     try {
-                        const result = await fetch(`https://translate.googleapis.com/translate_a/single?client=dict-chrome-ex&sl=en&tl=vi&hl=en-US&dt=t&dt=bd&dj=1&source=bubble&q=${selectionText}`);
+                        const result = await fetch(`https://translate.googleapis.com/translate_a/single?client=dict-chrome-ex&sl=auto&tl=vi&hl=en-US&dt=t&dt=bd&dj=1&source=bubble&q=${selectionText}`);
                         const data = await result.json();
                         const text = data?.sentences[0].trans;
                         renderTooltipResultTranslator(selectionLocation, selectionText, text);
@@ -116,22 +116,26 @@ function ContentScript() {
     };
 
 
-    const TooltipContent = ({selectionText, selectionTextTranslated}) => (
+    const TooltipContent = ({ selectionText, selectionTextTranslated }) => (
         <div id="translator-result-ext-rhp">
             <div className="translator-result-ext-container">
                 <div>
-                    <div className={styles.translateContainer}>
-                        <div className={styles.translateHeader}>
-                            <div className={styles.headerChange}>
-                                <img alt={""} src={chrome.runtime.getURL(Translate)} style={{width: 24, height: 24}}/>
-                                <p className={styles.changeInto}>Translate into : </p>
-                                <div className={styles.changeLanguage}>
+                    <div className="translateResultContainer">
+                        <div className="translateHeader">
+                            <div className="headerChange">
+                                <img
+                                    alt=""
+                                    src={chrome.runtime.getURL(Translate)}
+                                    style={{ width: 24, height: 24 }}
+                                />
+                                <div className="changeInto">Translate into : </div>
+                                <div className="changeLanguage">
                                     <select
                                         placeholder="ENG"
-                                        className={styles.languageSelect}
-                                        style={{color: "#000", fontWeight: 700}}
+                                        className="languageSelect"
+                                        style={{ color: "#000", fontWeight: 700 }}
                                     >
-                                        <option style={{marginBottom: 20}} value="option1">
+                                        <option style={{ marginBottom: 20 }} value="option1">
                                             ENG
                                         </option>
                                         <option value="option2">VN</option>
@@ -139,32 +143,49 @@ function ContentScript() {
                                     </select>
                                 </div>
                             </div>
-                            <div className={styles.headerSetting}>
-                                <div style={{paddingRight: "34px"}}>
-                                    <img alt={""} src={chrome.runtime.getURL(Setting)} style={{width: 16, height: 16}}/>
+                            <div className="headerSetting">
+                                <div style={{ paddingRight: "34px" }}>
+
+                                    <img
+                                        alt=""
+                                        src={chrome.runtime.getURL(Setting)}
+                                        style={{ width: 16, height: 16 }}
+                                    />
                                 </div>
-                                <div style={{paddingRight: "17px"}}>
-                                    <im alt={""} src={chrome.runtime.getURL(Close)} style={{width: 14, height: 14}}/>
+                                <div style={{ paddingRight: "17px" }}>
+                                    <img
+                                        alt=""
+                                        src={chrome.runtime.getURL(Close)}
+                                        style={{ width: 14, height: 14 }}
+                                    />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="translate-body" style={{display: "flex"}}>
+                        <div className="translate-body" style={{ display: "flex" }}>
+                            <div>{selectionTextTranslated}</div>
                             <div>
-
-                                <img alt={""} src={chrome.runtime.getURL(Speaker)} style={{width: 18, height: 18}}/>
+                                <img
+                                    alt=""
+                                    src={chrome.runtime.getURL(Speaker)}
+                                    style={{ width: 18, height: 18 }}
+                                />
                             </div>
                             <div>
-                                <img alt={""} src={chrome.runtime.getURL(Copy)} style={{width: 18, height: 18}}/>
+                                <img
+                                    alt=""
+                                    src={chrome.runtime.getURL(Copy)}
+                                    style={{ width: 18, height: 18 }}
+                                />
                             </div>
                         </div>
-                        <div className="translate-footer"></div>
                     </div>
                 </div>
-
             </div>
         </div>
     );
+
+
 
     const renderTooltipResultTranslator = (selectionLocation, selectionText, selectionTextTranslated) => {
         const tooltipWrapper = document.createElement("div");
@@ -237,7 +258,7 @@ document.body.appendChild(index);
 
 ReactDOM.createRoot(index).render(
     <React.StrictMode>
-            <ContentScript/>
+        <ContentScript/>
     </React.StrictMode>
 );
 
