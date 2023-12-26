@@ -10,7 +10,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content_script.jsx-loader-2137a2cf.js"
+        "assets/content_script.jsx-loader-9fb13d69.js"
       ],
       "matches": [
         "<all_urls>"
@@ -64,13 +64,13 @@
         "<all_urls>"
       ],
       "resources": [
-        "assets/Icon_Translate-6ef71b6a.png",
+        "assets/Icon_Translate-27ba311e.png",
         "assets/Icon_close-13ee09ef.png",
         "assets/Icon_copy-2f554adc.png",
         "assets/Icon_setting-b423b069.png",
         "assets/Icon_speaker-ea2064ac.png",
         "assets/client-58ea80d7.js",
-        "assets/content_script.jsx-4f944ad1.js"
+        "assets/content_script.jsx-13a3f2de.js"
       ],
       "use_dynamic_url": true
     }

@@ -116,6 +116,19 @@ function ContentScript() {
     };
 
 
+    const showTypeOfKey = (type) => {
+        switch (type) {
+            case "verb":
+                return <p style={{color: "#2f80ed", fontSize: 13, fontWeight: 700}}>( V )</p>;
+            case 'noun':
+                return <p style={{color: "#eb5757", fontSize: 13, fontWeight: 700}}>( N )</p>;
+            case "adjective":
+                return <p style={{color: "#000", fontSize: 13, fontWeight: 700}}>( ADJ )</p>;
+            default:
+                break
+        }
+    }
+
     const TooltipContent = ({ selectionText, selectionTextTranslated }) => (
         <div id="translator-result-ext-rhp">
             <div className="translator-result-ext-container">
@@ -145,7 +158,6 @@ function ContentScript() {
                             </div>
                             <div className="headerSetting">
                                 <div style={{ paddingRight: "34px" }}>
-
                                     <img
                                         alt=""
                                         src={chrome.runtime.getURL(Setting)}

@@ -1,4 +1,4 @@
-import{r as te,c as Rr,j as x,R as Fr}from"./client-58ea80d7.js";/* empty css              */const Dt="/assets/Icon_Translate-6ef71b6a.png";var ee={},ue={};/**
+import{r as te,c as Rr,j as x,R as Fr}from"./client-58ea80d7.js";/* empty css              */const Dt="/assets/Icon_Translate-27ba311e.png";var ee={},ue={};/**
  * @license React
  * react-dom-server-legacy.browser.production.min.js
  *
