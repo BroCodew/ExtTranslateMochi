@@ -36,5 +36,13 @@
   .translate-body {
     display: flex;
     flex-direction: column;
+    padding: 20px 10px;
+    p:first-child::first-letter {
+      text-transform: uppercase;
+    }
+    .bodyTranslateText {
+      font-size: 15px;
+      font-weight: 700;
+    }
   }
 }

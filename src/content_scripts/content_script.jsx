@@ -19,9 +19,211 @@ function ContentScript() {
     const [checkLocation, setCheckLocation] = useState(false)
     const tooltipWrapperRef = useRef(null);
     const tooltipResultRef = useRef(null);
+    const [isPaused, setIsPaused] = useState(false);
+    const [utterance, setUtterance] = useState(null);
+    const [externalTranslate, setExternalTranslate] = useState([]);
+
+
+    const TypeLanguage = [
+        {
+            ab: "Abkhazian",
+            aa: "Afar",
+            af: "Afrikaans",
+            ak: "Akan",
+            sq: "Albanian",
+            am: "Amharic",
+            ar: "Arabic",
+            an: "Aragonese",
+            hy: "Armenian",
+            as: "Assamese",
+            av: "Avaric",
+            ae: "Avestan",
+            ay: "Aymara",
+            az: "Azerbaijani",
+            bm: "Bambara",
+            ba: "Bashkir",
+            eu: "Basque",
+            be: "Belarusian",
+            bn: "Bengali",
+            bi: "Bislama",
+            bs: "Bosnian",
+            br: "Breton",
+            bg: "Bulgarian",
+            my: "Burmese",
+            ca: "Catalan",
+            ch: "Chamorro",
+            ce: "Chechen",
+            ny: "Chichewa",
+            zh: "Chinese",
+            cu: "Church Slavonic",
+            cv: "Chuvash",
+            kw: "Cornish",
+            co: "Corsican",
+            cr: "Cree",
+            hr: "Croatian",
+            cs: "Czech",
+            da: "Danish",
+            dv: "Divehi",
+            nl: "Dutch",
+            dz: "Dzongkha",
+            en: "English",
+            eo: "Esperanto",
+            et: "Estonian",
+            ee: "Ewe",
+            fo: "Faroese",
+            fj: "Fijian",
+            fi: "Finnish",
+            fr: "French",
+            fy: "Western Frisian",
+            ff: "Fulah",
+            gd: "Gaelic",
+            gl: "Galician",
+            lq: "Ganda",
+            ka: "Georgian",
+            de: "German",
+            el: "Greek",
+            kl: "Kalaallisut",
+            gn: "Guarani",
+            gu: "Gujarati",
+            ht: "Haitian",
+            ha: "Hausa",
+            he: "Hebrew",
+            hz: "Herero",
+            hi: "Hindi",
+            ho: "Hiri Motu",
+            hu: "Hungarian",
+            is: "Icelandic",
+            io: "Ido",
+            ig: "Igbo",
+            id: "Indonesian",
+            ia: "Interlingua",
+            ie: "Interlingue",
+            iu: "Inuktitut",
+            ik: "Inupiaq",
+            ga: "Irish",
+            it: "Italian",
+            ja: "Japanese",
+            jv: "Javanese",
+            kn: "Kannada",
+            kr: "Kanuri",
+            ks: "Kashmiri",
+            kk: "Kazakh",
+            km: "Central Khmer",
+            ki: "Kikuyu",
+            rw: "Kinyarwanda",
+            ky: "Kirghiz",
+            kv: "Komi",
+            kg: "Kongo",
+            ko: "Korean",
+            kj: "Kuanyama",
+            ku: "Kurdish",
+            lo: "Lao",
+            la: "Latin",
+            lv: "Latvian",
+            li: "Limburgan",
+            ln: "Lingala",
+            lt: "Lithuanian",
+            lu: "Luba-Katanga",
+            lb: "Luxembourgish",
+            mk: "Macedonian",
+            mg: "Malagasy",
+            ms: "Malay",
+            ml: "Malayalam",
+            mt: "Maltese",
+            gv: "Manx",
+            mi: "Maori",
+            mr: "Marathi",
+            mh: "Marshallese",
+            mn: "Mongolian",
+            na: "Nauru",
+            nv: "Navajo",
+            nd: "North Ndebele",
+            nr: "South Ndebele",
+            ng: "Ndonga",
+            ne: "Nepali",
+            no: "Norwegian",
+            nb: "Norwegian Bokmål",
+            nn: "Norwegian Nynorsk",
+            ii: "Sichuan Yi",
+            oc: "Occitan",
+            oj: "Ojibwa",
+            or: "Oriya",
+            om: "Oromo",
+            os: "Ossetian",
+            pi: "Pali",
+            ps: "Pashto",
+            fa: "Persian",
+            pl: "Polish",
+            pt: "Portuguese",
+            pa: "Punjabi",
+            qu: "Quechua",
+            ro: "Romanian",
+            rm: "Romansh",
+            rn: "Rundi",
+            ru: "Russian",
+            se: "Northern Sami",
+            sm: "Samoan",
+            sg: "Sango",
+            sa: "Sanskrit",
+            sc: "Sardinian",
+            sr: "Serbian",
+            sn: "Shona",
+            sd: "Sindhi",
+            si: "Sinhala",
+            sk: "Slovak",
+            sl: "Slovenian",
+            so: "Somali",
+            st: "Southern Sotho",
+            es: "Spanish",
+            su: "Sundanese",
+            sw: "Swahili",
+            ss: "Swahili",
+            sv: "Swedish",
+            tl: "Tagalog",
+            ty: "Tahitian",
+            tg: "Tajik",
+            ta: "Tamil",
+            tt: "Tatar",
+            te: "Telugu",
+            th: "Thai",
+            bo: "Tibetan",
+            ti: "Tigrinya",
+            to: "Tonga",
+            ts: "Tsonga",
+            tn: "Tswana",
+            tr: "Turkish",
+            tk: "Turkmen",
+            tw: "Twi",
+            ug: "Uighur",
+            uk: "Ukrainian",
+            ur: "Urdu",
+            uz: "Uzbek",
+            ve: "Venda",
+            vi: "VN",
+            vo: "Volapük",
+            wa: "Walloon",
+            cy: "Welsh",
+            wo: "Wolof",
+            xh: "Xhosa",
+            yi: "Yiddish",
+            yo: "Yoruba",
+            za: "Zhuang",
+            zu: "Zulu",
+        },
+    ];
 
     const bodyDom = document.querySelector("body");
+    const handlePlay = () => {
+        const synth = window.speechSynthesis;
 
+        if (isPaused) {
+            synth.resume();
+        }
+
+        synth.speak(utterance);
+
+        setIsPaused(false);
+    };
     const getSelectedText = () => {
         let newText = "";
         if (window.getSelection) {
@@ -48,11 +250,8 @@ function ContentScript() {
     const isVisible = (elem) => !!elem && !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
     const hideOnClickOutside = (element) => {
         const outsideClickListener = (event) => {
-            console.log('!element.contains(event.target)', !element.contains(event.target))
-            console.log("isVisible(element)", isVisible(element))
             if (!element.contains(event.target) && isVisible(element)) {
                 element.style.display = 'none';
-                console.log('element', element)
                 removeClickListener();
             }
         };
@@ -65,11 +264,12 @@ function ContentScript() {
 
     const hideTooltipOnClickOutside = () => {
         if (tooltipWrapperRef.current) {
-            console.log('tooltipWrapperRef.current', tooltipWrapperRef.current)
             hideOnClickOutside(tooltipWrapperRef.current);
-            setCheckLocation(true)
+            console.log('1111111')
         }
         if (tooltipResultRef.current) {
+            console.log('222222222')
+
             hideOnClickOutside(tooltipResultRef.current);
         }
     };
@@ -82,7 +282,6 @@ function ContentScript() {
         tooltipIcon.innerHTML = `<img src="${chrome.runtime.getURL(
             TranslateIcon
         )}" alt="" width="25px" height="25px"/>`;
-        console.log('111111111')
         const top = selectionLocation.top + selectionLocation.height + 6 + "px";
         const left =
             selectionLocation.left +
@@ -106,7 +305,6 @@ function ContentScript() {
                         const data = await result.json();
                         const text = data?.sentences[0].trans;
                         renderTooltipResultTranslator(selectionLocation, selectionText, text);
-                        console.log('text', text);
                     } catch (error) {
                         console.log(error);
                     }
@@ -129,7 +327,7 @@ function ContentScript() {
         }
     }
 
-    const TooltipContent = ({ selectionText, selectionTextTranslated }) => (
+    const TooltipContent = ({selectionText, selectionTextTranslated}) => (
         <div id="translator-result-ext-rhp">
             <div className="translator-result-ext-container">
                 <div>
@@ -139,56 +337,69 @@ function ContentScript() {
                                 <img
                                     alt=""
                                     src={chrome.runtime.getURL(Translate)}
-                                    style={{ width: 24, height: 24 }}
+                                    style={{width: 24, height: 24}}
                                 />
-                                <div className="changeInto">Translate into : </div>
+                                <div className="changeInto">Translate into 111111111:</div>
                                 <div className="changeLanguage">
                                     <select
                                         placeholder="ENG"
                                         className="languageSelect"
-                                        style={{ color: "#000", fontWeight: 700 }}
+                                        style={{color: "#000", fontWeight: 700}}
                                     >
-                                        <option style={{ marginBottom: 20 }} value="option1">
-                                            ENG
-                                        </option>
-                                        <option value="option2">VN</option>
-                                        <option value="option3">CN</option>
+                                        {TypeLanguage.map((item) =>
+                                            Object.entries(item).map(([key, value]) => (
+                                                <option key={key} value={key}>
+                                                    {value}
+                                                </option>
+                                            ))
+                                        )}
                                     </select>
                                 </div>
                             </div>
                             <div className="headerSetting">
-                                <div style={{ paddingRight: "34px" }}>
+                                <div style={{paddingRight: "34px"}}>
                                     <img
                                         alt=""
                                         src={chrome.runtime.getURL(Setting)}
-                                        style={{ width: 16, height: 16 }}
+                                        style={{width: 16, height: 16}}
                                     />
                                 </div>
-                                <div style={{ paddingRight: "17px" }}>
+                                <div style={{paddingRight: "17px"}}>
                                     <img
                                         alt=""
                                         src={chrome.runtime.getURL(Close)}
-                                        style={{ width: 14, height: 14 }}
+                                        style={{width: 14, height: 14}}
                                     />
                                 </div>
                             </div>
                         </div>
 
-                        <div className="translate-body" style={{ display: "flex" }}>
-                            <div>{selectionTextTranslated}</div>
-                            <div>
-                                <img
-                                    alt=""
-                                    src={chrome.runtime.getURL(Speaker)}
-                                    style={{ width: 18, height: 18 }}
-                                />
+                        <div className="translate-body" style={{display: "flex"}}>
+                            <div style={{display: "flex", alignItems: "center"}}>
+                                <p className={"body-translate-text"}>{selectionTextTranslated}</p>
+
+                                <div style={{display: "flex", marginLeft: "50spx"}} onClick={handlePlay}>
+                                    <img
+                                        alt={""}
+                                        src={chrome.runtime.getURL(Speaker)}
+                                        style={{width: 18, height: 18}}
+                                    />
+                                    <img alt={""} src={chrome.runtime.getURL(Copy)}
+                                         style={{marginLeft: "10px", width: 18, height: 18}}/>
+
+                                </div>
+                                <div>
+                                </div>
                             </div>
-                            <div>
-                                <img
-                                    alt=""
-                                    src={chrome.runtime.getURL(Copy)}
-                                    style={{ width: 18, height: 18 }}
-                                />
+
+                            <div style={{marginTop: "5px"}}>
+                                {externalTranslate?.dict?.map((item, key) =>
+                                    <div key={key}>
+                                        {showTypeOfKey(item.pos)}
+                                        <p>{item.terms.slice(0, 3).join(", ")}</p>
+
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -198,10 +409,9 @@ function ContentScript() {
     );
 
 
-
     const renderTooltipResultTranslator = (selectionLocation, selectionText, selectionTextTranslated) => {
-        const tooltipWrapper = document.createElement("div");
-        tooltipWrapper.id = "translator-result-ext-rhp";
+        tooltipResultRef.current= document.createElement("div");
+        tooltipResultRef.current.id = "translator-result-ext-rhp";
         const tooltipIconContainer = document.createElement("div");
         tooltipIconContainer.classList.add("translator-result-ext-container");
 
@@ -213,27 +423,34 @@ function ContentScript() {
         );
 
         ReactDOMServer.renderToStaticMarkup(tooltipContent);
-
-
-        tooltipWrapper.innerHTML = ReactDOMServer.renderToString(tooltipContent);
-        tooltipWrapper.append(tooltipIconContainer);
+        tooltipResultRef.current.innerHTML = ReactDOMServer.renderToString(tooltipContent);
+        tooltipResultRef.current.append(tooltipIconContainer);
         const top = selectionLocation.top - 6 + "px";
         const left = selectionLocation.left +
-            (selectionLocation.width / 2 - tooltipWrapper.offsetWidth / 2) +
+            (selectionLocation.width / 2 -  tooltipResultRef.current.offsetWidth / 2) +
             "px";
-        tooltipWrapper.style.position = "absolute";
-        tooltipWrapper.style.padding = "4px";
-        tooltipWrapper.style.top = top;
-        tooltipWrapper.style.left = left;
-        bodyDom.append(tooltipWrapper);
+        tooltipResultRef.current.style.position = "absolute";
+        tooltipResultRef.current.style.padding = "4px";
+        tooltipResultRef.current.style.top = top;
+        tooltipResultRef.current.style.left = left;
+        bodyDom.append( tooltipResultRef.current);
     };
 
-    const handleMouseUp = () => {
-        const tooltipResult = document.querySelector("div#translator-result-ext-rhp")
-        if (tooltipResult) tooltipResult.remove();
+    const handleMouseUp = (event) => {
+        tooltipResultRef.current = document.querySelector("div#translator-result-ext-rhp")
+        if (tooltipResultRef.current && !tooltipResultRef.current.contains(event.target)) {
+            tooltipResultRef.current.remove();
+            console.log('Tooltip removed');
+        }
+        tooltipWrapperRef.current = document.querySelector("div#translator-ext-rhp")
+        if (tooltipWrapperRef.current && !tooltipWrapperRef.current.contains(event.target)) {
+            tooltipWrapperRef.current.remove();
+            console.log('Tooltip removed');
+        }
+
+        console.log('33333')
         const selectionText = getSelectedText();
         if (selectionText && selectionText.length > 0) {
-            const selectionTextNode = getSelectedTextNode();
             const selectionLocation = getSelectedTextNode().getBoundingClientRect();
             renderTooltip(selectionLocation, selectionText);
             setTimeout(() => {
@@ -247,19 +464,40 @@ function ContentScript() {
     useEffect(() => {
         bodyDom.addEventListener("mouseup", handleMouseUp);
         const handleDocumentClick = (event) => {
-            if (!tooltipWrapperRef.current.contains(event.target) && isVisible(tooltipWrapperRef.current)) {
+            if (
+                tooltipWrapperRef.current &&
+                !tooltipWrapperRef.current.contains(event.target) &&
+                isVisible(tooltipWrapperRef.current)
+        ) {
+
+                console.log(' tooltipResultRef.current', tooltipResultRef.current)
+                console.log(' isVisible(tooltipResultRef.current)', isVisible(tooltipResultRef.current))
+                console.log('  !tooltipResultRef.current.contains(event.target)',   !tooltipResultRef.current.contains(event.target))
+                hideTooltipOnClickOutside();
+                event.stopPropagation();
+            }
+
+            if (
+                tooltipResultRef.current &&
+                !tooltipResultRef.current.contains(event.target) &&
+                isVisible(tooltipResultRef.current)
+            ) {
+                console.log(' tooltipResultRef.current', tooltipResultRef.current)
+                console.log(' isVisible(tooltipResultRef.current)', isVisible(tooltipResultRef.current))
+                console.log('  !tooltipResultRef.current.contains(event.target)',   !tooltipResultRef.current.contains(event.target))
                 hideTooltipOnClickOutside();
             }
         };
+
         document.addEventListener("click", handleDocumentClick);
         return () => {
             document.removeEventListener("click", handleDocumentClick);
+
             bodyDom.removeEventListener("mouseup", handleMouseUp);
         };
     }, []);
     return (
         <>
-            <div className={"tooltipWrapper"}></div>
         </>
     );
 }
@@ -274,58 +512,3 @@ ReactDOM.createRoot(index).render(
     </React.StrictMode>
 );
 
-// console.log('requestrequest', chrome.runtime.onMessage);
-
-// chrome.runtime.onMessage.addListener(async (request) => {
-// 	console.log('requestrequest11', request);
-// })
-
-// chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-// 	console.log('requestrequestrequest', request);
-// })
-
-// const newDiv = document.createElement("div");
-// newDiv.id = "ex-billing-list";
-
-// const index2 = document.getElementsByClassName(
-// 	"xeuugli x2lwn1j x78zum5 xdt5ytf x1iyjqo2 x2lah0s xozqiw3 x1kxxb1g xxc7z9f x1cvmir6"
-// )[0];
-
-// console.log('index2index2', index2);
-
-// if (index2 != undefined) {
-
-// 	index2.appendChild(newDiv);
-
-// 	ReactDOM.createRoot(newDiv).render(
-// 		<React.StrictMode>
-// 			<ContentScript2 url={document.location.href} />
-// 		</React.StrictMode>
-// 	);;
-// }
-
-// chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-// 	if (request.message === 'TabUpdated') {
-
-// 		const newDiv = document.createElement("div");
-// 		newDiv.id = "ex-billing-list";
-
-// 		const index2 = document.getElementsByClassName(
-// 			"xeuugli x2lwn1j x78zum5 xdt5ytf x1iyjqo2 x2lah0s xozqiw3 x1kxxb1g xxc7z9f x1cvmir6"
-// 		)[0];
-
-// 		console.log('index2index2', index2);
-
-// 		if (index2 != undefined) {
-
-// 			index2.appendChild(newDiv);
-
-// 			ReactDOM.createRoot(newDiv).render(
-// 				<React.StrictMode>
-// 					<ContentScript2 url={document.location.href} />
-// 				</React.StrictMode>
-// 			);;
-// 		}
-
-// 	}
-// })
