@@ -15,14 +15,17 @@ import Translate from "../images/Icon_Translate.png";
 
 
 function ContentScript() {
+    const [isShowIcon, setIsShowIcon] = useState(false);
+    const [isShowPopup, setIsShowPopup] = useState(false);
+
     const [selectedText, setSelectedText] = useState("");
     const [checkLocation, setCheckLocation] = useState(false)
-    const tooltipWrapperRef = useRef(null);
-    const tooltipResultRef = useRef(null);
     const [isPaused, setIsPaused] = useState(false);
     const [utterance, setUtterance] = useState(null);
     const [externalTranslate, setExternalTranslate] = useState([]);
-
+    const [language, setLanguage] = useState("ak")
+    const tooltipWrapperRef = useRef(null);
+    const tooltipResultRef = useRef(null);
 
     const TypeLanguage = [
         {
@@ -215,13 +218,10 @@ function ContentScript() {
     const bodyDom = document.querySelector("body");
     const handlePlay = () => {
         const synth = window.speechSynthesis;
-
         if (isPaused) {
             synth.resume();
         }
-
         synth.speak(utterance);
-
         setIsPaused(false);
     };
     const getSelectedText = () => {
@@ -233,11 +233,11 @@ function ContentScript() {
             const selection = document.getSelection();
             newText = selection?.toString() || "";
         }
-        setSelectedText(newText);
         return newText;
     };
 
     const getSelectedTextNode = () => {
+
         let newText = "" || {};
         if (window.getSelection) {
             newText = window.getSelection().getRangeAt(0);
@@ -265,14 +265,18 @@ function ContentScript() {
     const hideTooltipOnClickOutside = () => {
         if (tooltipWrapperRef.current) {
             hideOnClickOutside(tooltipWrapperRef.current);
-            console.log('1111111')
         }
         if (tooltipResultRef.current) {
-            console.log('222222222')
-
             hideOnClickOutside(tooltipResultRef.current);
         }
     };
+
+
+    const handleSelectLanguage = (e) => {
+        console.log('language', e.target.value)
+        setLanguage(e.target.value);
+    };
+
 
     const renderTooltip = (selectionLocation, selectionText) => {
         tooltipWrapperRef.current = document.createElement("div");
@@ -294,6 +298,7 @@ function ContentScript() {
             tooltipWrapperRef.current.style.left = left;
             tooltipWrapperRef.current.append(tooltipIcon);
         }
+
         if (tooltipWrapperRef.current) {
             bodyDom.append(tooltipWrapperRef.current);
         }
@@ -301,7 +306,7 @@ function ContentScript() {
             tooltipWrapperRef.current.addEventListener("click", async () => {
                 if (selectionText.length > 0) {
                     try {
-                        const result = await fetch(`https://translate.googleapis.com/translate_a/single?client=dict-chrome-ex&sl=auto&tl=vi&hl=en-US&dt=t&dt=bd&dj=1&source=bubble&q=${selectionText}`);
+                        const result = await fetch(`https://translate.googleapis.com/translate_a/single?client=dict-chrome-ex&sl=auto&tl=${language}&hl=en-US&dt=t&dt=bd&dj=1&source=bubble&q=${selectionText}`);
                         const data = await result.json();
                         const text = data?.sentences[0].trans;
                         renderTooltipResultTranslator(selectionLocation, selectionText, text);
@@ -312,6 +317,12 @@ function ContentScript() {
             });
         }
     };
+
+    useEffect(() => {
+        if (tooltipWrapperRef.current) {
+            renderTooltip()
+        }
+    }, [language]);
 
 
     const showTypeOfKey = (type) => {
@@ -327,7 +338,7 @@ function ContentScript() {
         }
     }
 
-    const TooltipContent = ({selectionText, selectionTextTranslated}) => (
+    const TooltipContent = ({selectionTextTranslated}) => (
         <div id="translator-result-ext-rhp">
             <div className="translator-result-ext-container">
                 <div>
@@ -339,12 +350,13 @@ function ContentScript() {
                                     src={chrome.runtime.getURL(Translate)}
                                     style={{width: 24, height: 24}}
                                 />
-                                <div className="changeInto">Translate into 111111111:</div>
+                                <div className="changeInto">Translate into :</div>
                                 <div className="changeLanguage">
                                     <select
                                         placeholder="ENG"
                                         className="languageSelect"
                                         style={{color: "#000", fontWeight: 700}}
+                                        onChange={(e) => handleSelectLanguage(e)}
                                     >
                                         {TypeLanguage.map((item) =>
                                             Object.entries(item).map(([key, value]) => (
@@ -410,7 +422,7 @@ function ContentScript() {
 
 
     const renderTooltipResultTranslator = (selectionLocation, selectionText, selectionTextTranslated) => {
-        tooltipResultRef.current= document.createElement("div");
+        tooltipResultRef.current = document.createElement("div");
         tooltipResultRef.current.id = "translator-result-ext-rhp";
         const tooltipIconContainer = document.createElement("div");
         tooltipIconContainer.classList.add("translator-result-ext-container");
@@ -427,32 +439,34 @@ function ContentScript() {
         tooltipResultRef.current.append(tooltipIconContainer);
         const top = selectionLocation.top - 6 + "px";
         const left = selectionLocation.left +
-            (selectionLocation.width / 2 -  tooltipResultRef.current.offsetWidth / 2) +
+            (selectionLocation.width / 2 - tooltipResultRef.current.offsetWidth / 2) +
             "px";
         tooltipResultRef.current.style.position = "absolute";
         tooltipResultRef.current.style.padding = "4px";
         tooltipResultRef.current.style.top = top;
         tooltipResultRef.current.style.left = left;
-        bodyDom.append( tooltipResultRef.current);
+        bodyDom.append(tooltipResultRef.current);
     };
 
     const handleMouseUp = (event) => {
         tooltipResultRef.current = document.querySelector("div#translator-result-ext-rhp")
+
         if (tooltipResultRef.current && !tooltipResultRef.current.contains(event.target)) {
             tooltipResultRef.current.remove();
-            console.log('Tooltip removed');
         }
+
         tooltipWrapperRef.current = document.querySelector("div#translator-ext-rhp")
         if (tooltipWrapperRef.current && !tooltipWrapperRef.current.contains(event.target)) {
             tooltipWrapperRef.current.remove();
-            console.log('Tooltip removed');
         }
 
-        console.log('33333')
         const selectionText = getSelectedText();
+
         if (selectionText && selectionText.length > 0) {
+            setSelectedText(selectionText);
+            setIsShowIcon(true)
             const selectionLocation = getSelectedTextNode().getBoundingClientRect();
-            renderTooltip(selectionLocation, selectionText);
+            selectionLocation && renderTooltip(selectionLocation, selectionText);
             setTimeout(() => {
                 const tooltipWrapper = tooltipWrapperRef.current;
                 if (tooltipWrapper) tooltipWrapper.remove();
@@ -460,19 +474,17 @@ function ContentScript() {
         }
     };
 
-
     useEffect(() => {
+
         bodyDom.addEventListener("mouseup", handleMouseUp);
+
         const handleDocumentClick = (event) => {
+
             if (
                 tooltipWrapperRef.current &&
                 !tooltipWrapperRef.current.contains(event.target) &&
                 isVisible(tooltipWrapperRef.current)
-        ) {
-
-                console.log(' tooltipResultRef.current', tooltipResultRef.current)
-                console.log(' isVisible(tooltipResultRef.current)', isVisible(tooltipResultRef.current))
-                console.log('  !tooltipResultRef.current.contains(event.target)',   !tooltipResultRef.current.contains(event.target))
+            ) {
                 hideTooltipOnClickOutside();
                 event.stopPropagation();
             }
@@ -482,22 +494,30 @@ function ContentScript() {
                 !tooltipResultRef.current.contains(event.target) &&
                 isVisible(tooltipResultRef.current)
             ) {
-                console.log(' tooltipResultRef.current', tooltipResultRef.current)
-                console.log(' isVisible(tooltipResultRef.current)', isVisible(tooltipResultRef.current))
-                console.log('  !tooltipResultRef.current.contains(event.target)',   !tooltipResultRef.current.contains(event.target))
                 hideTooltipOnClickOutside();
             }
         };
 
         document.addEventListener("click", handleDocumentClick);
+
         return () => {
             document.removeEventListener("click", handleDocumentClick);
-
             bodyDom.removeEventListener("mouseup", handleMouseUp);
         };
-    }, []);
+    }, [selectedText]);
     return (
         <>
+            {
+                isShowPopup && (
+                    <div id={"rrrrrr"} />
+                )
+            }
+
+            {
+                isShowIcon && (
+                    <div onClick={() => setIsShowPopup(!isShowPopup)} id={"ddd"} style={{width: "20px", height: "20px", background: "#000"}} />
+                )
+            }
         </>
     );
 }

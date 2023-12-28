@@ -10,7 +10,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content_script.jsx-loader-e0169846.js"
+        "assets/content_script.jsx-loader-daeda7d0.js"
       ],
       "matches": [
         "<all_urls>"
@@ -70,7 +70,7 @@
         "assets/Icon_setting-b423b069.png",
         "assets/Icon_speaker-ea2064ac.png",
         "assets/client-58ea80d7.js",
-        "assets/content_script.jsx-32dbef76.js"
+        "assets/content_script.jsx-6ca61260.js"
       ],
       "use_dynamic_url": true
     }

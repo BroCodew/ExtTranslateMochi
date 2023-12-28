@@ -1,13 +1,9 @@
 try {
-
 	chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 		console.log(`Change URL: ${tab.url}`);
 	});
-
 	// chrome.runtime.onInstalled.addListener(function () {
-
 	// 	chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-
 	// 		if (changeInfo.status === 'complete') {
 	// 			chrome.tabs.sendMessage(tabId, {
 	// 				message: 'TabUpdated'
@@ -15,7 +11,6 @@ try {
 	// 		}
 	// 	})
 	// });
-
 	chrome.bookmarks.getRecent(10, (results) => {
 		console.log(`bookmarks:`, results);
 	});
@@ -27,15 +22,12 @@ try {
 			chrome.runtime.reload();
 		}
 	});
-
-
 	// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	// 	// 2. A page requested user data, respond with a copy of `user`
 	// 	if (message === 'get-user-data') {
 	// 		sendResponse(user);
 	// 	}
 	// });
-
 	(async () => {
 		const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
 		console.log('tabgggggg', tab);
