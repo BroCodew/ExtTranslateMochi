@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import Button from "./components/Button";
 
 
-// cc 
+// rebase test 
 
 function Options() {
 	console.log(`this is options page`);
